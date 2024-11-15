@@ -2,7 +2,7 @@
 
 ## Steps to Run the Visualization Demo Locally
 
-- Download two missing GeoJSON files from https://github.com/OpenDataDE/State-zip-code-GeoJSON due to file size limit of GitHub Enterprise.
+- Download two missing GeoJSON files from https://github.com/OpenDataDE/State-zip-code-GeoJSON. These files could not be uploaded due to the file size limit of GitHub Enterprise.
   - ca_california_zip_codes_geo.min.json
   - tx_texas_zip_codes_geo.min.json
 - Place them in the GeoJSON directory.
@@ -14,7 +14,7 @@
 
 ## Implemented Functionalities
 
-### Front End [Dongsheng Yao]
+### Visualization [Dongsheng Yao]
 
 - Select between radio options to swith between USA choropleth map based on median property price and number of listing by state.
 - Drag a state from the USA choropleth map to the right-top area of the page, a separate state map (breakdown by zipcode) will be generated for visualization. We currently only support to visualize median price by each zipcode area.
@@ -26,7 +26,7 @@
 
 ## TODO List
 
-- Optional: Add necessary new visualization plot to the left-down area by taking advantage of the drag-and-pass features.
+- Optional: Add new visualization plot to the left-down area (by taking advantage of the drag-and-pass features) if needed. Adding analytical plots (e.g., Correlation Heatmap of Key Features) by attaching images directly in this area may be a potential idea for LLMs interpretation.
 - Implement backend to integrate machine learning models for prediction. [Linhao Bai]
 - Incorporate LLM models to generate summaries from the existing visualization. [Yupeng Tang and/or Xianrui Teng]
 - Design poster. [To be assigned to the person who will be available when others are working on the assigned tasks.]
