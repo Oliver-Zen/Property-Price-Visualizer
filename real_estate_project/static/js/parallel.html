@@ -1,0 +1,192 @@
+<!-- static/js/parallel.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>平行坐标图</title>
+  <!-- 引入 D3.js 库 -->
+  <script type="text/javascript" src="../lib/d3.v5.min.js"></script>
+  <script type="text/javascript" src="../lib/d3-dsv.min.js"></script>
+  <style>
+    /* 基本样式 */
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .axis {
+      font-size: 12px;
+    }
+
+    .axis text {
+      text-anchor: middle;
+    }
+
+    .background path {
+      fill: none;
+      stroke: #ccc;
+      stroke-width: 1px;
+    }
+
+    .foreground path {
+      fill: none;
+      stroke-width: 1px;
+      stroke-opacity: 0.5;
+    }
+
+    #tooltip {
+      position: absolute;
+      visibility: hidden;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 5px;
+      font-size: 12px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 用于交互的Tooltip -->
+  <div id="tooltip"></div>
+  <!-- D3.js 代码 -->
+  <script type="text/javascript">
+    // 设置图表的尺寸和边距
+    var margin = { top: 50, right: 10, bottom: 10, left: 10 },
+      width = 960 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
+
+    // 添加SVG对象到body
+    var svg = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform",
+        "translate(" + margin.left + "," + margin.top + ")");
+
+    // Tooltip div用于显示数据详情
+    var tooltip = d3.select("#tooltip");
+
+    // 加载数据
+    d3.csv("../cleaned_data/sample.csv").then(function (data) {
+
+      // 选择要可视化的数值列
+      var dimensions = ["price", "bed", "bath", "acre_lot", "house_size"];
+
+      // 将数据类型从字符串转换为数字
+      data.forEach(function (d) {
+        dimensions.forEach(function (p) {
+          d[p] = +d[p];
+        });
+      });
+
+      // 为每个维度设置比例尺
+      var y = {};
+      dimensions.forEach(function (dimension) {
+        y[dimension] = d3.scaleLinear()
+          .domain(d3.extent(data, function (d) { return d[dimension]; }))
+          .range([height, 0]);
+      });
+
+      // X轴用于定位各个坐标轴
+      var x = d3.scalePoint()
+        .range([0, width])
+        .padding(1)
+        .domain(dimensions);
+
+      // 绘制背景线条
+      svg.append("g")
+        .attr("class", "background")
+        .selectAll("path")
+        .data(data)
+        .enter().append("path")
+        .attr("d", path);
+
+      // 计算价格的中位数用于颜色编码
+      var medianPrice = d3.median(data, function (d) { return d.price; });
+
+      // 定义颜色和对比色的映射关系
+      var colorMapping = {
+        "orange": "blue",
+        "lightblue": "darkorange"
+      };
+
+      // 绘制前景线条（实际数据）
+      svg.append("g")
+        .attr("class", "foreground")
+        .selectAll("path")
+        .data(data)
+        .enter().append("path")
+        .attr("d", path)
+        .each(function (d) {
+          // 基于价格设置原始颜色，并存储在数据对象中
+          d.originalColor = d.price > medianPrice ? "orange" : "lightblue";
+        })
+        .style("stroke", function (d) {
+          return d.originalColor;
+        })
+        .on("mouseover", function (d) {
+          var event = d3.event;
+          d3.select(this)
+            .style("stroke-width", "3px")
+            .style("stroke", function (d) {
+              // 获取当前颜色的对比色
+              return colorMapping[d.originalColor];
+            });
+          tooltip.style("visibility", "visible")
+            .html(
+              "<strong>Price:</strong> $" + d.price + "<br>" +
+              "<strong>Bed:</strong> " + d.bed + "<br>" +
+              "<strong>Bath:</strong> " + d.bath + "<br>" +
+              "<strong>Acre Lot:</strong> " + d.acre_lot + "<br>" +
+              "<strong>House Size:</strong> " + d.house_size + " sq ft"
+            );
+        })
+        .on("mousemove", function (d) {
+          var event = d3.event;
+          tooltip.style("top", (event.pageY + 15) + "px")
+            .style("left", (event.pageX + 15) + "px");
+        })
+        .on("mouseout", function (d) {
+          d3.select(this)
+            .style("stroke-width", "1px")
+            .style("stroke", function (d) {
+              return d.originalColor;
+            });
+          tooltip.style("visibility", "hidden");
+        });
+
+      // 为每个维度添加一个组元素
+      var dimensionGroup = svg.selectAll(".dimension")
+        .data(dimensions)
+        .enter().append("g")
+        .attr("class", "dimension")
+        .attr("transform", function (d) { return "translate(" + x(d) + ")"; });
+
+      // 为每个维度添加坐标轴和标签
+      dimensionGroup.append("g")
+        .attr("class", "axis")
+        .each(function (d) { d3.select(this).call(d3.axisLeft(y[d])); })
+        .append("text")
+        .style("text-anchor", "middle")
+        .attr("y", -20)
+        .attr("fill", "black")
+        .style("font-weight", "bold")
+        .text(function (d) { return d; });
+
+      // 绘制连接各坐标轴的线条
+      function path(d) {
+        return d3.line()(dimensions.map(function (p) {
+          return [x(p), y[p](d[p])];
+        }));
+      }
+
+    }).catch(function (error) {
+      // 如果数据加载失败，处理错误
+      console.error('数据加载或解析出错。', error);
+    });
+
+  </script>
+</body>
+
+</html>

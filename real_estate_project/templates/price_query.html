@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Property Price Prediction</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="{% url 'visualization' %}">Visualization</a>
+        <a href="{% url 'price_query' %}">Prediction</a>
+        <a href="{% url 'choropleth' %}">Choropleth Map</a>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+        <header>
+            <h1 class="title">Property Price Prediction</h1>
+            <p><em>Model Used: Decision Tree</em></p>
+        </header>
+
+        <main>
+            <div class="form-container">
+                <h2>Enter Property Details</h2>
+                <form method="post">
+                    {% csrf_token %}
+
+                    <!-- Required Fields -->
+                    <label for="bed">Number of Bedrooms:</label>
+                    <input type="number" id="bed" name="bed" min="0" placeholder="e.g., 3" required>
+
+                    <label for="bath">Number of Bathrooms:</label>
+                    <input type="number" id="bath" name="bath" min="0" placeholder="e.g., 2" required>
+
+                    <!-- Optional Fields -->
+                    <h3>Optional Details</h3>
+
+                    <label for="zip_code">Zip Code:</label>
+                    <input type="text" id="zip_code" name="zip_code" placeholder="e.g., 12345">
+
+                    <label for="status">Status:</label>
+                    <input type="text" id="status" name="status" placeholder="e.g., Active">
+
+                    <label for="acre_lot">Acre Lot:</label>
+                    <input type="number" id="acre_lot" name="acre_lot" min="0" step="0.01" placeholder="e.g., 1.5">
+
+                    <label for="city">City:</label>
+                    <input type="text" id="city" name="city" placeholder="e.g., New York">
+
+                    <label for="state">State:</label>
+                    <input type="text" id="state" name="state" placeholder="e.g., NY">
+
+                    <label for="house_size">House Size (sqft):</label>
+                    <input type="number" id="house_size" name="house_size" min="0" placeholder="e.g., 2000">
+
+                    <input type="submit" value="Predict Price">
+                </form>
+
+                {% if price %}
+                    <div class="result success">
+                        <p><strong>Prediction:</strong> ${{ price }}</p>
+                    </div>
+                {% elif error %}
+                    <div class="result error">
+                        <p>{{ error }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2024 USA Property Price Dashboard</p>
+    </footer>
+</body>
+
+</html>
