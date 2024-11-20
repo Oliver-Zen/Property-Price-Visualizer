@@ -31,3 +31,8 @@
 - Incorporate LLM models to generate summaries from the existing visualization. [Yupeng Tang and/or Xianrui Teng]
 - Design poster. [To be assigned to the person who will be available when others are working on the assigned tasks.]
 - Final report. [Ian Wong: Focus on 'Experiments/ Evaluation' part; Dongsheng Yao: Refine 'Method' part.]
+
+## How to run Django
+Enter the real_estate_project
+```
+python manage.py runserver
