@@ -6,3 +6,4 @@ GeoJSON/tx_texas_zip_codes_geo.min.json
 .DS_Store
 
 .joblib
+.idea

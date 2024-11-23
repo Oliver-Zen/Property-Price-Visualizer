@@ -1,4 +1,7 @@
-<!-- static/js/parallel.html -->
+<!-- templates/visualization.html -->
+
+{% load static %}
+
 <!DOCTYPE html>
 <html>
 
@@ -6,8 +9,8 @@
   <meta charset="utf-8">
   <title>Parallel</title>
   <!-- 引入 D3.js 库 -->
-  <script type="text/javascript" src="../lib/d3.v5.min.js"></script>
-  <script type="text/javascript" src="../lib/d3-dsv.min.js"></script>
+  <script type="text/javascript" src="{% static 'lib/d3.v5.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'lib/d3-dsv.min.js' %}"></script>
   <style>
     /* 基本样式 */
     body {
@@ -43,10 +46,32 @@
       font-size: 12px;
       pointer-events: none;
     }
+    /* 导航栏样式 */
+    nav {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    nav a {
+        margin: 0 10px;
+        text-decoration: none;
+        color: #54278f;
+        font-weight: bold;
+    }
+
+    nav a:hover {
+        text-decoration: underline;
+    }
   </style>
 </head>
 
 <body>
+  <nav>
+{#    <a href="{% url 'visualization' %}">Visualization</a> |#}
+    <a href="{% url 'price_query' %}">Prediction</a>
+    <a href="{% url 'visualization' %}">Choropleth Map</a>
+  </nav>
+
   <!-- 用于交互的Tooltip -->
   <div id="tooltip"></div>
   <!-- D3.js 代码 -->
@@ -68,7 +93,9 @@
     var tooltip = d3.select("#tooltip");
 
     // 加载数据
-    d3.csv("../cleaned_data/sample.csv").then(function (data) {
+    d3.csv("{% static 'data/realtor_data.csv' %}").then(function (data) {
+    // d3.csv("{% url 'get_data' %}").then(function (data) {
+      console.log("数据加载成功:", data);  // 添加日志
 
       // 选择要可视化的数值列
       var dimensions = ["price", "bed", "bath", "acre_lot", "house_size"];
@@ -79,6 +106,7 @@
           d[p] = +d[p];
         });
       });
+      console.log("数据转换后:", data);  // 添加日志
 
       // 为每个维度设置比例尺
       var y = {};
@@ -104,6 +132,7 @@
 
       // 计算价格的中位数用于颜色编码
       var medianPrice = d3.median(data, function (d) { return d.price; });
+      console.log("中位数价格:", medianPrice);  // 添加日志
 
       // 定义颜色和对比色的映射关系
       var colorMapping = {
@@ -185,7 +214,6 @@
       // 如果数据加载失败，处理错误
       console.error('数据加载或解析出错。', error);
     });
-
   </script>
 </body>
 
