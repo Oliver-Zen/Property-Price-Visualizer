@@ -3,26 +3,21 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import Realtor
-<<<<<<< HEAD
-=======
-from django.db.models import Avg
->>>>>>> eab1542 (integrate django)
 from django.conf import settings
 import joblib
 import os
 import numpy as np
-<<<<<<< HEAD
 import pandas as pd
 
 # Define the directory where models are stored
-MODEL_DIR = os.path.join(settings.BASE_DIR, 'visualization', 'models')
+MODEL_DIR = os.path.join(settings.BASE_DIR, "visualization", "models")
 
 # Define model file names
 MODEL_FILES = {
-    'decision_tree': 'decision_tree_regressor.joblib',
-    'random_forest': 'random_forest_regressor.joblib',
-    'linear_regression': 'linear_regression_model.joblib',
-    'mlp': 'neural_net_regressor.joblib',
+    "decision_tree": "decision_tree_regressor.joblib",
+    "random_forest": "random_forest_regressor.joblib",
+    "linear_regression": "linear_regression_model.joblib",
+    "mlp": "neural_net_regressor.joblib",
 }
 
 # Load models at startup
@@ -39,76 +34,72 @@ for model_key, model_file in MODEL_FILES.items():
         loaded_models[model_key] = None
         print(f"Error loading model {model_key}: {e}")
 
+
 def visualization_view(request):
     """
     Render the visualization page.
     """
-    return render(request, 'Visualization.html')
+    return render(request, "Visualization.html")
+
 
 def choropleth_view(request):
     """
     Render the choropleth map page.
     """
-    return render(request, 'visualization.html')
+    return render(request, "visualization.html")
+
 
 def get_data(request):
     """
     Provide JSON data for realtors.
     """
-=======
-
-MODEL_PATH = os.path.join(settings.BASE_DIR, 'visualization', 'models', 'decision_tree_model.joblib')
-model = joblib.load(MODEL_PATH)
-
-def visualization_view(request):
-    return render(request, 'visualization.html')
-
-def choropleth_view(request):
-    return render(request, 'choropleth.html')
-
-def get_data(request):
->>>>>>> eab1542 (integrate django)
     realtors = Realtor.objects.all().values(
-        'brokered_by', 'status', 'price', 'bed', 'bath',
-        'acre_lot', 'street', 'city', 'state', 'zip_code',
-        'house_size', 'prev_sold_date'
+        "brokered_by",
+        "status",
+        "price",
+        "bed",
+        "bath",
+        "acre_lot",
+        "street",
+        "city",
+        "state",
+        "zip_code",
+        "house_size",
+        "prev_sold_date",
     )
     data = list(realtors)
     return JsonResponse(data, safe=False)
 
+
 def price_query_view(request):
-<<<<<<< HEAD
     """
     Handle property price prediction based on user input.
     """
-=======
->>>>>>> eab1542 (integrate django)
     price = None
     error = None
-    if request.method == 'POST':
-        bed = request.POST.get('bed')
-        bath = request.POST.get('bath')
-<<<<<<< HEAD
-        zip_code = request.POST.get('zip_code')
-        status = request.POST.get('status')
-        acre_lot = request.POST.get('acre_lot')
-        city = request.POST.get('city')
-        state = request.POST.get('state')
-        house_size = request.POST.get('house_size')
-        selected_model = request.POST.get('model')
+    if request.method == "POST":
+        bed = request.POST.get("bed")
+        bath = request.POST.get("bath")
+        zip_code = request.POST.get("zip_code")
+        status = request.POST.get("status")
+        acre_lot = request.POST.get("acre_lot")
+        city = request.POST.get("city")
+        state = request.POST.get("state")
+        house_size = request.POST.get("house_size")
+        selected_model = request.POST.get("model")
 
         if not bed or not bath or not selected_model:
             error = "Please fill in all required fields and select a model."
-            return render(request, 'price_query.html', {'price': price, 'error': error})
+            return render(request, "price_query.html", {"price": price, "error": error})
 
         if selected_model not in loaded_models:
             error = "Invalid model selected."
-            return render(request, 'price_query.html', {'price': price, 'error': error})
+            return render(request, "price_query.html", {"price": price, "error": error})
 
         model = loaded_models.get(selected_model)
         if model is None:
             error = "The selected model is not available."
-            return render(request, 'price_query.html', {'price': price, 'error': error})
+            return render(request, "price_query.html", {"price": price, "error": error})
 
         try:
             bed = float(bed)
@@ -119,7 +110,9 @@ def price_query_view(request):
             status = float(status) if status else 0.0
             city = float(city) if city else 0.0
             state = float(state) if state else 0.0
-            features = np.array([[acre_lot, bath, bed, city, house_size, state, status, zip_code]])
+            features = np.array(
+                [[acre_lot, bath, bed, city, house_size, state, status, zip_code]]
+            )
             predicted_log_price = model.predict(features)[0]
             predicted_price = np.expm1(predicted_log_price)
             price = round(predicted_price, 2)
@@ -129,21 +122,4 @@ def price_query_view(request):
         except Exception as e:
             error = f"An error occurred during prediction: {str(e)}"
 
-=======
-        if bed is not None and bath is not None:
-            try:
-                bed = float(bed)
-                bath = float(bath)
-                # 简单的查询：取卧室和浴室数量匹配的房子的平均价格
-                queryset = Realtor.objects.filter(bed=bed, bath=bath)
-                if queryset.exists():
-                    avg_price = queryset.aggregate(Avg('price'))['price__avg']
-                    price = round(avg_price, 2)
-                else:
-                    error = "没有找到匹配的房源。"
-            except ValueError:
-                error = "请输入有效的数字。"
-        else:
-            error = "请填写所有字段。"
->>>>>>> eab1542 (integrate django)
-    return render(request, 'price_query.html', {'price': price, 'error': error})
+    return render(request, "price_query.html", {"price": price, "error": error})
