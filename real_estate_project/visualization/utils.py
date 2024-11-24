@@ -14,13 +14,13 @@ def load_house_data():
                 'bed': int(row['bed']),
                 'bath': int(row['bath']),
                 'price': float(row['price']),
-                # 添加其他字段如果需要
+               
             })
     return houses
 
 def predict_price(bed, bath):
     houses = load_house_data()
-    # 简单计算平均价格
+
     total = 0
     count = 0
     for house in houses:

@@ -39,14 +39,14 @@ def visualization_view(request):
     """
     Render the visualization page.
     """
-    return render(request, "Visualization.html")
-
-
-def choropleth_view(request):
-    """
-    Render the choropleth map page.
-    """
     return render(request, "visualization.html")
+
+
+# def choropleth_view(request):
+#     """
+#     Render the choropleth map page.
+#     """
+#     return render(request, "visualization.html")
 
 
 def get_data(request):

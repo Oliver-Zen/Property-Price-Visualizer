@@ -7,7 +7,14 @@
     <script type="text/javascript" src="{% static 'lib/d3.v5.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'lib/d3-tip.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'lib/d3-legend.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <!-- Include Chart.js and html2canvas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
+    
+    <!-- The following line make some styles unavailable -->
+    <!-- <link rel="stylesheet" href="{% static 'css/styles.css' %}"> -->
     <style>
         /* define CSS rules here */
         .d3-tip {
@@ -69,11 +76,111 @@
             opacity: 0.3; 
         }
 
-    /* Add styles for the dropdown */
-    #optionSelector {
-        margin: 15px;
-        font-size: 20px;
-    }
+        /* Add styles for the dropdown */
+        #optionSelector {
+            margin: 15px;
+            font-size: 20px;
+        }
+
+
+    /* #response {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+
+        #response h2 {
+            margin-top: 0;
+        }
+*/
+        #generate-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        } 
+
+        #generate-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* #response-text {
+    font-family: Arial, sans-serif;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+} */
+
+        /* Styles for LLM Section*/
+        #llm-section {
+            position: fixed; /* Fix to the bottom-left corner */
+            bottom: 0;
+            left: 0;
+            width: 50%;  
+            height: 50%; 
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            box-sizing: border-box; /* Include padding and border in the total width/height */
+            overflow: auto; /* Allows scrolling if content overflows */
+            z-index: 100; /* Stays on top of other content */
+        }
+
+
+        #response-text {
+            font-size: 20px;
+            color: #555;
+            white-space: pre-wrap;
+            word-wrap: break-word; /* Breaks words to fit the container */
+            line-height: 1.5;
+            max-height: calc(100% - 60px); 
+            overflow-y: auto; /* Enables vertical scrolling if content exceeds the available space */
+        }
+
+        /* Style for the navigation bar */
+        .navbar {
+            background-color: black; 
+            padding: 10px 20px; 
+            display: flex; 
+            justify-content: center; 
+            gap: 20px; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for a floating effect */
+
+        }
+
+        /* Style for individual navigation links */
+        .navbar a {
+            text-decoration: none; 
+            color: white; 
+            font-size: 16px; 
+            font-weight: bold; 
+            padding: 10px 15px; /* Padding inside each link */
+            border-radius: 4px; /* Slightly rounded corners for hover effect */
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for hover effects */
+        }
+
+        /* Hover effect for navigation links */
+        .navbar a:hover {
+            background-color: #0056b3;
+            color: #f9f9f9; 
+        }
+
+        /* Active link styling */
+        .navbar a.active { 
+            background-color: #54278f;
+            color: #f9f9f9; 
+        }
+
+        .navbar a.inactive {
+            /* color: #aaa; Dimmer text color for inactive links */
+            color: #f9f9f9; 
+        }
+
+
 
     </style>
     <title>USA Property Price Visualization</title>
@@ -81,10 +188,9 @@
 
 
 <body>
-    <nav>
-{#        <a href="{% url 'visualization' %}">Visualization</a>#}
-        <a href="{% url 'price_query' %}">Prediction</a>
-        <a href="{% url 'visualization' %}">Choropleth Map</a>
+    <nav class="navbar">
+        <a href="{% url 'price_query' %}" class="inactive">Prediction</a>
+        <a href="{% url 'visualization' %}" class="active">Visualization</a>
     </nav>
     <!-- Add heading for the visualization -->
     <h1 class="title">USA Property Price Visualization </h1>
@@ -103,6 +209,18 @@
             Number of Listings by State
         </label>
     </div>
+
+    <!-- LLM section has been updated to use svg instead for better position. -->
+    <!-- Generate Summary Button -->
+    <!-- <button id="generate-button">Generate Summary</button> -->
+
+    <!-- GPT Response Section -->
+    <!-- <div id="response" style="display: none;">
+        <h2>GPT-4o's Feedback:</h2>
+        <p id="gpt-response">Awaiting response...</p>
+    </div> -->
+
+
 
     <script>
         
@@ -216,16 +334,16 @@
         })
         ]).then(
         (data) => {
-            const states = data[0]; // GeoJSON 数据
-            const stateData = data[1]; // CSV 数据
+            const states = data[0]; 
+            stateData = data[1]; 
             
             console.log("States data:", states);
             console.log("State aggregated data:", stateData);
 
-            // 调用自定义函数进行后续处理
-            prefetchStateGeoJSON(); // 如果这是你的函数，保留它
-            createMapAndLegend(states, stateData); // 创建地图和图例
-            svg.call(tooltip); // 初始化工具提示
+           
+            prefetchStateGeoJSON(); 
+            createMapAndLegend(states, stateData); 
+            svg.call(tooltip); 
         }
     ).catch((error) => {
         console.error("Error loading files:", error);
@@ -514,7 +632,7 @@
                 .on('mouseover', function(event, d) {
                     zipTooltip.show(event, d);
                     const zipcode = d3.select(this).datum().properties.ZCTA5CE10;
-                    console.log(zipcode)
+                    // console.log(zipcode)
                     //highlightLine(zipcode);
                     d3.selectAll(`#multiDimensionalPlot path[zipcode="${zipcode}"]`)
                         .classed("highlighted", true);
@@ -602,7 +720,8 @@
                 console.log(zipcode);
 
                 // Placeholded function for the spider plot, passing the specific zipcode data to the function after dragging.
-                generateSpiderPlot(zipData);
+                // generateSpiderPlot(zipData);
+                // captureChartScreenshot();
                 
                 d3.select(this)
                     .transition()
@@ -760,17 +879,246 @@
 
         // Section for future functionalities
         // This is a placeholder function, which takes the zipData after dragging a zipcode in the left down corner.
-        function generateSpiderPlot(zipData) {
-            const zipCode = zipData.properties.zipcode;
-            const plotData = {
-                medianPrice: zipData.properties.price_median,
-                bedMedian: zipData.properties.bed_median,
-                bathMedian: zipData.properties.bath_median,
-                acreLotMedian: zipData.properties.acre_lot_median,
-                houseSizeMedian: zipData.properties.house_size_median
+        // function generateSpiderPlot(zipData) {
+        //     const zipCode = zipData.properties.zipcode;
+        //     const plotData = {
+        //         medianPrice: zipData.properties.price_median,
+        //         bedMedian: zipData.properties.bed_median,
+        //         bathMedian: zipData.properties.bath_median,
+        //         acreLotMedian: zipData.properties.acre_lot_median,
+        //         houseSizeMedian: zipData.properties.house_size_median
+        //     };
+        //     console.log(plotData)
+        // }
+
+
+        // Section for LLMs Integration
+
+        const llmWidth = width / 2;
+        const llmHeight = height / 2 - 90;
+        
+        // LLM section container inside the SVG
+        const llmSection = svg.append("g")
+            .attr("id", "llm-section")
+            .attr("transform", `translate(${margin.left}, ${height - llmHeight})`);
+
+        // Background rectangle
+        llmSection.append("rect")
+            .attr("width", llmWidth)
+            .attr("height", llmHeight)
+            .attr("fill", "#f9f9f9")
+            .attr("stroke", "#ddd")
+            .attr("stroke-width", 1);
+
+
+        llmSection.append("text")
+        .attr("id", "generate-button")
+            .attr("x", llmWidth / 2)
+            .attr("y", 35)
+            .attr("text-anchor", "middle")
+            .style("font-size", "40px")
+            .style("font-weight", "bold")
+            .style("fill", "#54278f")
+            .text("AI Insights");
+
+        // Use foreignObject to append HTML content inside the SVG
+        const foreignObject = llmSection.append("foreignObject")
+            .attr("x", 10)
+            .attr("y", 60)  
+            .attr("width", llmWidth - 10)
+            .attr("height", llmHeight - 60); 
+
+        // Append the div inside the foreignObject for the response text
+        foreignObject.append("xhtml:div")
+            .style("width", "100%")
+            .style("height", "100%")
+            .style("overflow-y", "auto")
+            .html("<div id='response-text'>Click 'AI Insights' or press 'Ctrl' + 'S' to generate summary.</div>");
+
+        // Function to capture a screenshot of the chart
+    //     async function captureChartScreenshot() {
+    //         const svgElement = document.querySelector('#choropleth'); 
+    //         if (!svgElement) {
+    //             console.error('SVG element not found');
+    //             return null;
+    //         }
+
+    // // Serialize the SVG to a Blob
+    //         const serializer = new XMLSerializer();
+    //         const svgString = serializer.serializeToString(svgElement);
+
+    //         const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+    //         const url = URL.createObjectURL(svgBlob);
+
+    //         // Create an image to render the Blob
+    //         const img = new Image();
+    //         img.src = url;
+
+    //         return new Promise((resolve, reject) => {
+    //             img.onload = () => {
+    //                 const canvas = document.createElement('canvas');
+    //                 canvas.width = svgElement.clientWidth || 800;
+    //                 canvas.height = svgElement.clientHeight || 600;
+    //                 const ctx = canvas.getContext('2d');
+    //                 ctx.drawImage(img, 0, 0);
+
+    //                 const imageData = canvas.toDataURL('image/png');
+    //                 resolve(imageData);
+    //                 URL.revokeObjectURL(url);
+    //             };
+
+    //             img.onerror = (error) => {
+    //                 reject(error);
+    //                 URL.revokeObjectURL(url);
+    //             };
+    //         });
+    //     }
+
+        async function captureChartScreenshot() {
+            const svgElement = document.querySelector('#choropleth');
+            if (!svgElement) {
+                console.error('SVG element not found');
+                return null;
+            }
+
+
+        const foreignObject = svgElement.querySelector('foreignObject');
+        let savedAttributes = null;
+
+        if (foreignObject) {
+            // Save the relative position and dimensions of the foreignObject
+            const rect = foreignObject.getBoundingClientRect(); 
+            savedAttributes = {
+                x: rect.left,  
+                y: rect.top,  
+                width: foreignObject.getAttribute('width'),
+                height: foreignObject.getAttribute('height'),
             };
-            console.log(plotData)
+
+            foreignObject.querySelector('#response-text').innerHTML = "Awaiting response...";
+            // Temporarily remove the foreignObject from the DOM
+            foreignObject.parentNode.removeChild(foreignObject);
         }
+
+        // Serialize the SVG to a Blob (without the foreignObject)
+        const serializer = new XMLSerializer();
+        const svgString = serializer.serializeToString(svgElement);
+
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(svgBlob);
+
+        // Create an image to render the Blob (SVG content)
+        const img = new Image();
+        img.src = url;
+
+        return new Promise((resolve, reject) => {
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = svgElement.clientWidth || 800; 
+                canvas.height = svgElement.clientHeight || 600;  
+                const ctx = canvas.getContext('2d');
+                
+                // Draw the SVG image onto the canvas
+                ctx.drawImage(img, 0, 0);
+
+                // Convert canvas to Base64 image data (png format)
+                const imageData = canvas.toDataURL('image/png');
+                resolve(imageData);
+
+                // Clean up: revoke object URL
+                URL.revokeObjectURL(url);
+
+                // Restore the foreignObject visibility and position after the screenshot is captured
+                if (foreignObject && savedAttributes) {
+                   
+                    foreignObject.setAttribute('x', savedAttributes.x - svgElement.getBoundingClientRect().left); 
+                    foreignObject.setAttribute('y', savedAttributes.y - svgElement.getBoundingClientRect().top); 
+                    foreignObject.setAttribute('width', savedAttributes.width);
+                    foreignObject.setAttribute('height', savedAttributes.height);
+                    svgElement.appendChild(foreignObject); // Re-append it back to the DOM
+
+                    // const div = foreignObject.querySelector('xhtml|div');
+                    // const responseTextElement = div.querySelector('#response-text');
+                    // responseTextElement.innerHTML = "Awaiting response...";
+                }
+            };
+
+            img.onerror = (error) => {
+                reject(error);
+                URL.revokeObjectURL(url);
+
+                if (foreignObject && savedAttributes) {
+                    foreignObject.setAttribute('x', savedAttributes.x - svgElement.getBoundingClientRect().left); 
+                    foreignObject.setAttribute('y', savedAttributes.y - svgElement.getBoundingClientRect().top);
+                    foreignObject.setAttribute('width', savedAttributes.width);
+                    foreignObject.setAttribute('height', savedAttributes.height);
+                    svgElement.appendChild(foreignObject); 
+                }
+            };
+        });
+    }
+
+
+
+        // Function to send screenshot to GPT backend
+        async function sendScreenshotToGPT() {
+            try {
+                // Capture the screenshot
+                const screenshotBase64 = await captureChartScreenshot();
+
+                // Send the screenshot to the backend
+                const response = await fetch('http://localhost:3000/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image: screenshotBase64 }),
+                });
+
+                // Parse JSON response
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Display the GPT response
+                // document.getElementById('gpt-response').innerText = data.reply;
+                // document.getElementById('response').style.display = 'block';
+
+
+                const responseText = data.reply || "No response received.";
+                const textElement = d3.select("#response-text");
+
+                //Clear previous text
+                textElement.text("");
+
+                // Display response character by character
+                let index = 0;
+                const interval = setInterval(() => {
+                    textElement.text(responseText.slice(0, ++index));
+                    if (index >= responseText.length) {
+                        clearInterval(interval);
+                    }
+                }, 20); // Current speed
+                } catch (error) {
+                        console.error('Error:', error);
+                        // document.getElementById('gpt-response').innerText = 'An error occurred while fetching the response.';
+                        // document.getElementById('response').style.display = 'block';
+                        d3.select("#response-text").text("An error occurred while fetching the response.");
+                    }
+                }
+
+
+        document.getElementById('generate-button').addEventListener('click', sendScreenshotToGPT);
+
+        document.addEventListener("keydown", function (event) {
+            if (event.ctrlKey && event.key === "s") {
+                event.preventDefault();
+                sendScreenshotToGPT(); 
+            }
+        });
+
 
     </script>
 

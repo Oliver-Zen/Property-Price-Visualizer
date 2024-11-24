@@ -1,5 +1,15 @@
 # USA-Property-Price-Visualization
 
+## TODO List
+
+- <del>Optional: Add new visualization plot to the left-down area (by taking advantage of the drag-and-pass features) if needed. Adding analytical plots (e.g., Correlation Heatmap of Key Features) by attaching images directly in this area may be a potential idea for LLMs interpretation.<del>
+- <del>Implement backend to integrate machine learning models for prediction. [Linhao Bai]<del>
+- <del>Incorporate LLM models to generate summaries from the existing visualization. [Yupeng Tang]<del>
+- Review fesign poster. 
+- Review final report.
+- Write documentation for code.
+
+
 ## Steps to Run the Visualization Demo Locally
 
 - Download two missing GeoJSON files from https://github.com/OpenDataDE/State-zip-code-GeoJSON. These files could not be uploaded due to the file size limit of GitHub Enterprise.
@@ -22,15 +32,21 @@
 - Drag a state from the USA choropleth map to the right-top area of the page will also generate a multi-dimensional view plot at the right-down area of the page. When moving the cursor through different zipcode areas, the corresponding line from the multi-dimensional view plot will be highlighted in orange color.
 - We can visualize a differnt state by simply dragging it to the right-top area to replace the current map.
 - Notes #1: The current implementation fetches all the geojson data when running for the first time, so it may take several seconds to load the state map.
-- Notes #2: Dragging a zipcode area from the state map to the left-down area of the page will pass all the data to it for future functionalities (it only console.log the data currently.)
+- Notes #2: Dragging a zipcode area from the state map to the left-down area of the page will pass all the data to it for future functionalities (it only console.log the data currently).
 
-## TODO List
 
-- Optional: Add new visualization plot to the left-down area (by taking advantage of the drag-and-pass features) if needed. Adding analytical plots (e.g., Correlation Heatmap of Key Features) by attaching images directly in this area may be a potential idea for LLMs interpretation.
-- Implement backend to integrate machine learning models for prediction. [Linhao Bai]
-- Incorporate LLM models to generate summaries from the existing visualization. [Yupeng Tang and/or Xianrui Teng]
-- Design poster. [To be assigned to the person who will be available when others are working on the assigned tasks.]
-- Final report. [Ian Wong: Focus on 'Experiments/ Evaluation' part; Dongsheng Yao: Refine 'Method' part.]
+## How to use the LLM functionality
+- Obtain an LLM API key from GitHub Marketplace
+  - Go to 'https://github.com/marketplace/models/azure-openai/gpt-4o'.
+  - Click 'Get API key' at the right corner.
+  - Click 'Get developer key'.
+  - Click 'Generate new token' to create a token, make sure it's classic.
+  - Follow the instructions from the page to set up the local environment variable.
+- Install node.js and npm.
+- Navigate to the express directory.
+- Run 'npm install' to read the 'package.json' file to install all required dependiencies.
+- Run 'node server.js' to start the express server on port 3000 of local host.
+- Now run the Django project and the LLM functionality should work as expected.
 
 ## How to run Django
 Enter the real_estate_project
