@@ -12,9 +12,7 @@
 
 ## Steps to Run the Visualization Demo Locally
 
-- Download two missing GeoJSON files from https://github.com/OpenDataDE/State-zip-code-GeoJSON. These files could not be uploaded due to the file size limit of GitHub Enterprise.
-  - ca_california_zip_codes_geo.min.json
-  - tx_texas_zip_codes_geo.min.json
+- Download all missing GeoJSON files from https://github.com/OpenDataDE/State-zip-code-GeoJSON.
 - Place them in the GeoJSON directory.
 - Open a terminal window.
 - Navigate to the project directory.
