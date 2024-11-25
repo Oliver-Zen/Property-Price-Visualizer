@@ -47,7 +47,8 @@
 - Now run the Django project and the LLM functionality should work as expected.
 
 ## How to run Django
-Install all the required python library such as Django, pandas...
-Enter the real_estate_project
+- All the joblib files are here: https://drive.google.com/drive/folders/1j0TUMN69nD3dIKsSSOjNMGj4u8WSHRPB?usp=drive_link
+- Install all the required python library such as Django, pandas...
+- Enter the real_estate_project
 ```
 python manage.py runserver
