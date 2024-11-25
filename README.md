@@ -12,9 +12,7 @@
 
 ## Steps to Run the Visualization Demo Locally
 
-- Download two missing GeoJSON files from https://github.com/OpenDataDE/State-zip-code-GeoJSON. These files could not be uploaded due to the file size limit of GitHub Enterprise.
-  - ca_california_zip_codes_geo.min.json
-  - tx_texas_zip_codes_geo.min.json
+- Download all missing GeoJSON files from https://github.com/OpenDataDE/State-zip-code-GeoJSON.
 - Place them in the GeoJSON directory.
 - Open a terminal window.
 - Navigate to the project directory.
@@ -49,6 +47,8 @@
 - Now run the Django project and the LLM functionality should work as expected.
 
 ## How to run Django
-Enter the real_estate_project
+- All the joblib files are here: https://drive.google.com/drive/folders/1j0TUMN69nD3dIKsSSOjNMGj4u8WSHRPB?usp=drive_link
+- Install all the required python library such as Django, pandas...
+- Enter the real_estate_project
 ```
 python manage.py runserver

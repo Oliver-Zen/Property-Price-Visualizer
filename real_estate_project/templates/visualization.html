@@ -11,7 +11,8 @@
     <!-- Include Chart.js and html2canvas -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     
     <!-- The following line make some styles unavailable -->
     <!-- <link rel="stylesheet" href="{% static 'css/styles.css' %}"> -->
@@ -115,9 +116,9 @@
     overflow-wrap: break-word;
 } */
 
-        /* Styles for LLM Section*/
-        #llm-section {
-            position: fixed; /* Fix to the bottom-left corner */
+        /* Styles for LLM Section （Before addressing markdown response）*/
+        /* #llm-section {
+            position: fixed; 
             bottom: 0;
             left: 0;
             width: 50%;  
@@ -125,9 +126,9 @@
             background-color: #f9f9f9;
             border: 1px solid #ddd;
             padding: 10px;
-            box-sizing: border-box; /* Include padding and border in the total width/height */
-            overflow: auto; /* Allows scrolling if content overflows */
-            z-index: 100; /* Stays on top of other content */
+            box-sizing: border-box; 
+            overflow: auto; 
+            z-index: 100; 
         }
 
 
@@ -135,11 +136,78 @@
             font-size: 20px;
             color: #555;
             white-space: pre-wrap;
-            word-wrap: break-word; /* Breaks words to fit the container */
+            word-wrap: break-word; 
             line-height: 1.5;
             max-height: calc(100% - 60px); 
-            overflow-y: auto; /* Enables vertical scrolling if content exceeds the available space */
+            overflow-y: auto; 
+        } */
+
+        /* Styles for LLM Section (Working on handling styles for markdown response) */
+
+        #llm-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 50%;  
+            height: 50%; 
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 5px;
+            box-sizing: border-box;
+            overflow: auto;
+            z-index: 100;
         }
+
+
+        #response-text h3 {
+            margin-top: 0px; 
+            margin-bottom: 0px; 
+            font-size: 20px; 
+            color: #333; 
+        }
+
+        /* Paragraph Spacing */
+        #response-text p {
+            margin-top: 0px;
+            margin-bottom: 0px;
+            font-size: 20px;
+            line-height: 1.4;
+        }
+
+        /* Bullet Points */
+        #response-text ul {
+            margin-top: 0px;
+            margin-bottom: 0px;
+            padding-left: 20px;
+        }
+
+        /* Nested List Items */
+        #response-text ul ul {
+            margin-top: 0px;
+            margin-bottom: 0px;
+            padding-left: 15px;
+        }
+
+     
+        #response-text li {
+            margin-top: 0px;
+            margin-bottom: 0px;
+            line-height: 1.5;
+        }
+
+        /* Overall Styling */
+        #response-text {
+            font-size: 20px;
+            line-height: 1.4;
+            color: #555;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+
+
+
+
 
         /* Style for the navigation bar */
         .navbar {
@@ -179,6 +247,11 @@
             /* color: #aaa; Dimmer text color for inactive links */
             color: #f9f9f9; 
         }
+
+
+
+
+
 
 
 
@@ -974,6 +1047,13 @@
     //         });
     //     }
 
+        // Function to update the response-text with markdown
+        function updateResponseText(markdown) {
+            const htmlContent = marked.parse(markdown); // Convert markdown to HTML
+            const responseTextDiv = document.getElementById('response-text');
+            responseTextDiv.innerHTML = htmlContent; // Set the converted HTML
+        }
+
         async function captureChartScreenshot() {
             const svgElement = document.querySelector('#choropleth');
             if (!svgElement) {
@@ -1037,9 +1117,6 @@
                     foreignObject.setAttribute('height', savedAttributes.height);
                     svgElement.appendChild(foreignObject); // Re-append it back to the DOM
 
-                    // const div = foreignObject.querySelector('xhtml|div');
-                    // const responseTextElement = div.querySelector('#response-text');
-                    // responseTextElement.innerHTML = "Awaiting response...";
                 }
             };
 
@@ -1080,34 +1157,59 @@
                     throw new Error(`Server error: ${response.status}`);
                 }
 
-                const data = await response.json();
+                // const data = await response.json();
 
                 // Display the GPT response
                 // document.getElementById('gpt-response').innerText = data.reply;
                 // document.getElementById('response').style.display = 'block';
 
 
+                // const responseText = data.reply || "No response received.";
+                // const textElement = d3.select("#response-text");
+
+                // //Clear previous text
+                // textElement.text("");
+
+                // // Display response character by character
+                // let index = 0;
+                // const interval = setInterval(() => {
+                //     textElement.text(responseText.slice(0, ++index));
+                //     if (index >= responseText.length) {
+                //         clearInterval(interval);
+                //     }
+                // }, 20); // Current speed
+
+                // New function to handle markdown response
+                const data = await response.json();
+
+            
                 const responseText = data.reply || "No response received.";
-                const textElement = d3.select("#response-text");
 
-                //Clear previous text
-                textElement.text("");
+                const responseTextDiv = document.getElementById("response-text");
+                responseTextDiv.innerHTML = "";
 
-                // Display response character by character
+                // Split the response into characters
+                const chars = responseText.split("");
+                let renderedText = "";
+
                 let index = 0;
                 const interval = setInterval(() => {
-                    textElement.text(responseText.slice(0, ++index));
-                    if (index >= responseText.length) {
+                    renderedText += chars[index];
+                    index++;
+
+                    // Parse and render the current text as HTML
+                responseTextDiv.innerHTML = marked.parse(renderedText);
+                    if (index >= chars.length) {
                         clearInterval(interval);
                     }
-                }, 20); // Current speed
-                } catch (error) {
-                        console.error('Error:', error);
-                        // document.getElementById('gpt-response').innerText = 'An error occurred while fetching the response.';
-                        // document.getElementById('response').style.display = 'block';
-                        d3.select("#response-text").text("An error occurred while fetching the response.");
-                    }
+                }, 20); 
+            } catch (error) {
+                    console.error('Error:', error);
+                    // document.getElementById('gpt-response').innerText = 'An error occurred while fetching the response.';
+                    // document.getElementById('response').style.display = 'block';
+                    d3.select("#response-text").text("An error occurred while fetching the response.");
                 }
+            }
 
 
         document.getElementById('generate-button').addEventListener('click', sendScreenshotToGPT);
