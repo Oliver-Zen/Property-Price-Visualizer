@@ -5,9 +5,9 @@
 - <del>Optional: Add new visualization plot to the left-down area (by taking advantage of the drag-and-pass features) if needed. Adding analytical plots (e.g., Correlation Heatmap of Key Features) by attaching images directly in this area may be a potential idea for LLMs interpretation.<del>
 - <del>Implement backend to integrate machine learning models for prediction. [Linhao Bai]<del>
 - <del>Incorporate LLM models to generate summaries from the existing visualization. [Yupeng Tang]<del>
-- Review fesign poster. 
-- Review final report.
-- Write documentation for code.
+- <del>Review poster.<del>
+- <del>Review final report.<del>
+- <del>Write documentation for code.<del>
 
 
 ## Steps to Run the Visualization Demo Locally
