@@ -1,13 +1,11 @@
-# USA-Property-Price-Visualization
+# USA Property Price Visualization & Insights
 
-## TODO List
-
-- <del>Optional: Add new visualization plot to the left-down area (by taking advantage of the drag-and-pass features) if needed. Adding analytical plots (e.g., Correlation Heatmap of Key Features) by attaching images directly in this area may be a potential idea for LLMs interpretation.<del>
-- <del>Implement backend to integrate machine learning models for prediction. [Linhao Bai]<del>
-- <del>Incorporate LLM models to generate summaries from the existing visualization. [Yupeng Tang]<del>
-- <del>Review poster.<del>
-- <del>Review final report.<del>
-- <del>Write documentation for code.<del>
+This project was a collaborative effort, with contributions from:
+- Dongsheng Yao
+- Huanzhong Jia
+- Ian Huang
+- Linhao Bai
+- Yupeng Tang
 
 
 ## Steps to Run the Visualization Demo Locally
