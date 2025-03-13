@@ -18,6 +18,8 @@ This project was a collaborative effort, with contributions from:
 - Open a web browser at http://localhost:8000/.
 - Open and run "visualization_v4.html".
 
+https://github.com/user-attachments/assets/c763b364-79a4-4f17-93d3-9363f05b1dd1
+
 ## Implemented Functionalities
 
 ### Visualization [Dongsheng Yao]
